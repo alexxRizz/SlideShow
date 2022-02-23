@@ -1,0 +1,88 @@
+plugins {
+  id "com.android.application"
+  id "org.jetbrains.kotlin.android"
+  id "dagger.hilt.android.plugin"
+  id "kotlin-kapt"
+  id "kotlin-android"
+  id "androidx.navigation.safeargs.kotlin"
+}
+
+android {
+  compileSdk 31
+
+  defaultConfig {
+    applicationId "ru.rizz.slideshow"
+    minSdk 22
+    targetSdk 31
+    versionCode 1
+    versionName "1.0"
+
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+    }
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8
+  }
+  buildFeatures {
+    dataBinding true
+    viewBinding true
+  }
+}
+
+dependencies {
+  implementation "androidx.appcompat:appcompat:1.4.1"
+  implementation "androidx.constraintlayout:constraintlayout:2.1.3"
+  implementation "com.google.android.material:material:1.5.0"
+
+  // *** coroutines
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+  implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+  // *** hilt
+  kapt "com.google.dagger:hilt-compiler:$hilt_version"
+  implementation "com.google.dagger:hilt-android:$hilt_version"
+
+  // *** ktx
+  def lifecycle_version = "2.4.1"
+  implementation "androidx.core:core-ktx:1.7.0"
+  implementation "androidx.fragment:fragment-ktx:1.4.1"
+  implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+  implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+  implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+
+  // *** navigation
+  implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+  implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+
+  // // *** room
+  // def room_version = "2.4.1"
+  // kapt "androidx.room:room-compiler:$room_version"
+  // implementation "androidx.room:room-runtime:$room_version"
+  // implementation "androidx.room:room-ktx:$room_version"
+
+  // *** datastore
+  implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+  // *** sdp, ssp
+  def sdp_version = "1.0.6"
+  implementation "com.intuit.sdp:sdp-android:$sdp_version"
+  implementation "com.intuit.ssp:ssp-android:$sdp_version"
+
+  // *** testing
+  testImplementation "junit:junit:4.13.2"
+  androidTestImplementation "androidx.test.ext:junit:1.1.3"
+}
+
+kapt { // https://dagger.dev/hilt/gradle-setup.html
+  correctErrorTypes true
+}

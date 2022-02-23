@@ -1,0 +1,4 @@
+<resources>
+  <string name="app_name">SlideShow</string>
+  <string name="settings_prompt"><u>Необходимо задать настройки</u></string>
+</resources>
