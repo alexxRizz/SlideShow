@@ -6,8 +6,8 @@ import androidx.datastore.preferences.*
 import androidx.datastore.preferences.core.*
 import dagger.hilt.android.qualifiers.*
 import kotlinx.coroutines.flow.*
+import ru.rizz.slideshow.common.*
 import javax.inject.*
-import kotlin.time.*
 import kotlin.time.Duration.Companion.seconds
 
 interface ISettingsReadonlyRepository {
@@ -24,26 +24,29 @@ class SettingsRepository @Inject constructor(
 ) : ISettingsRepository {
 
 	companion object {
-		private val PICTURE_DIR_PATH = stringPreferencesKey("pictureDirPath")
-		private val PICTURE_CHANGE_INTERVAL = intPreferencesKey("pictureChangeInterval")
+		private val IMAGES_DIR_PATH = stringPreferencesKey("imagesDirPath")
+		private val IMAGES_CHANGE_INTERVAL = intPreferencesKey("imagesChangeInterval")
 	}
 
 	private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 	override suspend fun getSettings() =
 		mContext.dataStore.data.firstOrNull()?.let {
-			if (it[PICTURE_DIR_PATH] == null)
+			if (!it.contains(IMAGES_DIR_PATH))
 				return null
 			Settings(
-				it[PICTURE_DIR_PATH] ?: "",
-				it[PICTURE_CHANGE_INTERVAL]?.seconds ?: 1.seconds,
+				it.require(IMAGES_DIR_PATH),
+				it.require(IMAGES_CHANGE_INTERVAL).seconds,
 			)
 		}
 
 	override suspend fun setSettings(settings: Settings) {
 		mContext.dataStore.edit {
-			it[PICTURE_DIR_PATH] = settings.pictureDirPath
-			it[PICTURE_CHANGE_INTERVAL] = settings.pictureChangeInterval.toInt(DurationUnit.SECONDS)
+			it[IMAGES_DIR_PATH] = settings.imagesDirPath
+			it[IMAGES_CHANGE_INTERVAL] = settings.imagesChangeInterval.seconds
 		}
 	}
+
+	private fun <T> Preferences.require(key: Preferences.Key<T>) =
+		this[key]!!
 }

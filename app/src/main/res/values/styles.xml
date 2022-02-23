@@ -3,6 +3,18 @@
     <item name="colorPrimary">@color/light_blue_500</item>
     <item name="colorPrimaryDark">@color/light_blue_700</item>
     <item name="colorAccent">@color/red_500</item>
+    <item name="colorOnPrimary">@color/white</item>
     <item name="android:windowBackground">?android:colorBackground</item>
+  </style>
+
+  <style name="MainButton" parent="Widget.AppCompat.Button">
+    <item name="android:backgroundTint">?attr/colorPrimary</item>
+    <item name="android:textColor">?attr/colorOnPrimary</item>
+    <item name="android:paddingTop">@dimen/button_vertical_padding</item>
+    <item name="android:paddingBottom">@dimen/button_vertical_padding</item>
+  </style>
+
+  <style name="NumberPickerText">
+    <item name="android:textSize">@dimen/_18ssp</item>
   </style>
 </resources>

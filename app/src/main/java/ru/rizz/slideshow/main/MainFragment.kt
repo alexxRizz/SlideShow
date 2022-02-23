@@ -1,7 +1,6 @@
 package ru.rizz.slideshow.main
 
 import androidx.fragment.app.*
-import androidx.navigation.fragment.*
 import dagger.hilt.android.*
 import ru.rizz.slideshow.R
 import ru.rizz.slideshow.common.*
@@ -19,6 +18,6 @@ class MainFragment : FragmentBase<MainVM, Event, FragmentMainBinding>() {
 	}
 
 	override fun onEvent(ev: Event) = when (ev) {
-		Event.SettingsClick -> findNavController().navigate(MainFragmentDirections.actionMainFragmentToSettingsFragment())
+		Event.SettingsClick -> navigate(MainFragmentDirections.actionMainFragmentToSettingsFragment())
 	}
 }

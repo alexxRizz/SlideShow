@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <dimen name="padding">@dimen/_10sdp</dimen>
+  <dimen name="big_padding">@dimen/_20sdp</dimen>
+  <dimen name="button_vertical_padding">@dimen/_15sdp</dimen>
+</resources>

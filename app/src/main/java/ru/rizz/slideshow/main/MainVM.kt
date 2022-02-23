@@ -9,7 +9,7 @@ import javax.inject.*
 
 @HiltViewModel
 class MainVM @Inject constructor(
-	private val mSettingsRepository: ISettingsRepository
+	private val mSettingsRepository: ISettingsReadonlyRepository
 ) : ViewModelBase() {
 
 	sealed class Event : IVmEvent {
@@ -27,4 +27,7 @@ class MainVM @Inject constructor(
 
 	fun onSettingsPromptClick() =
 		sendEvent(Event.SettingsClick)
+
+	// https://stackoverflow.com/questions/47941357/how-to-access-files-in-a-directory-given-a-content-uri
+	// DocumentFile.fromTreeUri()
 }

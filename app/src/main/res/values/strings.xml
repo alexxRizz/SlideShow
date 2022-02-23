@@ -1,4 +1,8 @@
 <resources>
   <string name="app_name">SlideShow</string>
   <string name="settings_prompt"><u>Необходимо задать настройки</u></string>
+  <string name="images_dir_path">Путь к папке с изображениями:</string>
+  <string name="select_dir">Выбрать папку</string>
+  <string name="save">Сохранить</string>
+  <string name="images_change_interval">Интервал между кадрами\nв секундах</string>
 </resources>

@@ -1,5 +1,7 @@
 package ru.rizz.slideshow.settings
 
+import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.fragment.app.*
 import dagger.hilt.android.*
 import ru.rizz.slideshow.R
@@ -13,10 +15,19 @@ class SettingsFragment : FragmentBase<SettingsVM, Event, FragmentSettingsBinding
 	override val layoutId = R.layout.fragment_settings
 	override val vm by viewModels<SettingsVM>()
 
+	private val mDirSelection = registerForActivityResult(OpenDocumentTree()) {
+		if (it != null)
+			vm.onDirSelected(it)
+	}
+
 	override fun onViewCreated() {
+		vm.onCreate()
 	}
 
 	override fun onEvent(ev: Event) = when (ev) {
-		Event.Zzz -> TODO()
+		Event.DirSelectionClick -> mDirSelection.launch(null)
+		Event.StartClick -> navigate(SettingsFragmentDirections.actionSettingsFragmentToMainFragment())
+		is Event.PreconditionsViolated -> Toast.makeText(context, ev.text, Toast.LENGTH_SHORT).show()
+		is Event.ErrorOccured -> Toast.makeText(context, ev.text, Toast.LENGTH_LONG).show()
 	}
 }

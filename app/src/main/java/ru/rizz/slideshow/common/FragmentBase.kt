@@ -4,6 +4,8 @@ import android.os.*
 import android.view.*
 import androidx.databinding.*
 import androidx.fragment.app.*
+import androidx.navigation.*
+import androidx.navigation.fragment.*
 import ru.rizz.slideshow.*
 
 abstract class FragmentBase<
@@ -33,7 +35,9 @@ abstract class FragmentBase<
 		onViewCreated()
 	}
 
-	protected fun <T> androidx.lifecycle.LiveData<T>.observe(observer: androidx.lifecycle.Observer<T>) {
+	protected fun <T> androidx.lifecycle.LiveData<T>.observe(observer: androidx.lifecycle.Observer<T>) =
 		observe(viewLifecycleOwner, observer)
-	}
+
+	protected fun navigate(directions: NavDirections) =
+		findNavController().navigate(directions)
 }
