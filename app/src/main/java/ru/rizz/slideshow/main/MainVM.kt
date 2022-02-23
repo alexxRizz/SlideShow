@@ -1,33 +1,38 @@
 package ru.rizz.slideshow.main
 
+import android.util.*
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.*
-import kotlinx.coroutines.*
 import ru.rizz.slideshow.common.*
 import ru.rizz.slideshow.settings.*
 import javax.inject.*
 
+private const val TAG = "MainVM"
+
 @HiltViewModel
 class MainVM @Inject constructor(
-	private val mSettingsRepository: ISettingsReadonlyRepository
+	imageLoader: IImageLoader,
+	private val mSettingsRepository: ISettingsReadonlyRepository,
 ) : ViewModelBase() {
 
 	sealed class Event : IVmEvent {
 		object SettingsClick : Event()
 	}
 
-	val hasSettingsVM = MutableLiveData(false)
+	private var mSettings: Settings? = null
 
-	fun onCreate() {
-		viewModelScope.launch {
-			val settings = mSettingsRepository.getSettings()
-			hasSettingsVM.value = settings != null
+	val hasSettingsVM = MutableLiveData(true)
+	val imageVM = imageLoader.images
+
+	suspend fun onCreate() {
+		try {
+			mSettings = mSettingsRepository.getSettings()
+			hasSettingsVM.value = mSettings != null
+		} catch (e: Exception) {
+			Log.e(TAG, "Ошибка запуска слайд-шоу", e)
 		}
 	}
 
 	fun onSettingsPromptClick() =
 		sendEvent(Event.SettingsClick)
-
-	// https://stackoverflow.com/questions/47941357/how-to-access-files-in-a-directory-given-a-content-uri
-	// DocumentFile.fromTreeUri()
 }

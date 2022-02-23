@@ -14,9 +14,6 @@
   <fragment android:id="@+id/settingsFragment"
     android:name="ru.rizz.slideshow.settings.SettingsFragment"
     android:label="Настройки"
-    tools:layout="@layout/fragment_settings"
-    >
-    <action android:id="@+id/action_settingsFragment_to_mainFragment"
-      app:destination="@id/mainFragment"/>
+    tools:layout="@layout/fragment_settings">
   </fragment>
 </navigation>
