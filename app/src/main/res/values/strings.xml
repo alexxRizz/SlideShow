@@ -5,4 +5,8 @@
   <string name="select_dir">Выбрать папку</string>
   <string name="save">Сохранить</string>
   <string name="images_change_interval">Интервал между кадрами\nв секундах</string>
+  <string name="schedule_start_time">Запуск слайд-шоу в указанное время</string>
+  <string name="schedule_stop_time">Остановка слайд-шоу в указанное время</string>
+  <string name="stop_time">Время остановки слайд-шоу:</string>
+  <string name="start_time">Время запуска слайд-шоу:</string>
 </resources>

@@ -26,6 +26,12 @@ class SettingsRepository @Inject constructor(
 	companion object {
 		private val IMAGES_DIR_PATH = stringPreferencesKey("imagesDirPath")
 		private val IMAGES_CHANGE_INTERVAL = intPreferencesKey("imagesChangeInterval")
+		private val SCHEDULE_START_SLIDE_SHOW_FLAG = booleanPreferencesKey("scheduleStartSlideShowFlag")
+		private val SCHEDULE_STOP_SLIDE_SHOW_FLAG = booleanPreferencesKey("scheduleStopSlideShowFlag")
+		private val START_HOUR = intPreferencesKey("startHour")
+		private val START_MINUTE = intPreferencesKey("startMinute")
+		private val STOP_HOUR = intPreferencesKey("stopHour")
+		private val STOP_MINUTE = intPreferencesKey("stopMinute")
 	}
 
 	private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -37,6 +43,12 @@ class SettingsRepository @Inject constructor(
 			Settings(
 				it.require(IMAGES_DIR_PATH),
 				it.require(IMAGES_CHANGE_INTERVAL).seconds,
+				it.require(SCHEDULE_START_SLIDE_SHOW_FLAG),
+				it.require(SCHEDULE_STOP_SLIDE_SHOW_FLAG),
+				it.require(START_HOUR),
+				it.require(START_MINUTE),
+				it.require(STOP_HOUR),
+				it.require(STOP_MINUTE),
 			)
 		}
 
@@ -44,6 +56,12 @@ class SettingsRepository @Inject constructor(
 		mContext.dataStore.edit {
 			it[IMAGES_DIR_PATH] = settings.imagesDirPath
 			it[IMAGES_CHANGE_INTERVAL] = settings.imagesChangeInterval.seconds
+			it[SCHEDULE_START_SLIDE_SHOW_FLAG] = settings.scheduleStartSlideShowFlag
+			it[SCHEDULE_STOP_SLIDE_SHOW_FLAG] = settings.scheduleStopSlideShowFlag
+			it[START_HOUR] = settings.startHour
+			it[START_MINUTE] = settings.startMinute
+			it[STOP_HOUR] = settings.stopHour
+			it[STOP_MINUTE] = settings.stopMinute
 		}
 	}
 

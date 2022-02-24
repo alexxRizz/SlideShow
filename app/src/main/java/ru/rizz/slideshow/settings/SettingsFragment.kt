@@ -5,6 +5,7 @@ import android.util.*
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.fragment.app.*
+import com.google.android.material.tabs.*
 import dagger.hilt.android.*
 import ru.rizz.slideshow.R
 import ru.rizz.slideshow.common.*
@@ -34,6 +35,10 @@ class SettingsFragment : FragmentBase<SettingsVM, Event, FragmentSettingsBinding
 
 	override fun onViewCreated() {
 		vm.onCreate()
+		binding.viewPager.adapter = SettingsTabAdapter(vm)
+		TabLayoutMediator(binding.tabs, binding.viewPager) { tab, pos: Int ->
+			tab.text = SettingsTabAdapter.getTabTitle(pos)
+		}.attach()
 	}
 
 	override fun onEvent(ev: Event) = when (ev) {
@@ -41,5 +46,10 @@ class SettingsFragment : FragmentBase<SettingsVM, Event, FragmentSettingsBinding
 		Event.StartClick -> popBackStack()
 		is Event.PreconditionsViolated -> Toast.makeText(context, ev.text, Toast.LENGTH_SHORT).show()
 		is Event.ErrorOccured -> Toast.makeText(context, ev.text, Toast.LENGTH_LONG).show()
+		Event.ImagesDirPathChanged -> onImagesDirPathChanged()
+	}
+
+	private fun onImagesDirPathChanged() {
+		binding.viewPager.adapter?.notifyItemChanged(0)
 	}
 }

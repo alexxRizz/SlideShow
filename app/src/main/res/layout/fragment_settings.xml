@@ -1,86 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
   <data>
     <variable name="vm" type="ru.rizz.slideshow.settings.SettingsVM"/>
   </data>
 
   <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/padding">
+    android:layout_height="match_parent">
 
-    <ScrollView
-      android:id="@+id/scroll"
+    <com.google.android.material.tabs.TabLayout
+      android:id="@+id/tabs"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+    <androidx.viewpager2.widget.ViewPager2
+      android:id="@+id/viewPager"
       android:layout_width="match_parent"
       android:layout_height="0dp"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintBottom_toTopOf="@id/start">
-
-      <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-          android:id="@+id/imageDirPathText"
-          android:layout_width="0dp"
-          android:layout_height="wrap_content"
-          app:layout_constraintLeft_toLeftOf="parent"
-          app:layout_constraintRight_toLeftOf="@id/imageDirPath"
-          app:layout_constraintTop_toTopOf="parent"
-          android:text="@string/images_dir_path"
-          android:textSize="@dimen/_14ssp"
-          />
-        <TextView
-          android:id="@+id/imageDirPath"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          app:layout_constraintBaseline_toBaselineOf="@id/imageDirPathText"
-          app:layout_constraintLeft_toRightOf="@id/imageDirPathText"
-          app:layout_constraintRight_toRightOf="parent"
-          android:textSize="@dimen/_16ssp"
-          tools:text="не задан"
-          android:text="@{vm.imagesDirPathInfoVM}"
-          android:textColor="@{vm.isImagesDirPathSetVM ? @color/green_700 : @color/red_500}"
-          />
-        <Button
-          android:id="@+id/selectDir"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          app:layout_constraintTop_toBottomOf="@id/imageDirPath"
-          android:layout_marginTop="@dimen/_5sdp"
-          android:text="@string/select_dir"
-          android:onClick="@{() -> vm.onDirSelectionClick()}"
-          />
-        <TextView
-          android:id="@+id/imagesChangeIntervalText"
-          android:layout_width="0dp"
-          android:layout_height="wrap_content"
-          app:layout_constraintTop_toBottomOf="@id/selectDir"
-          app:layout_constraintLeft_toLeftOf="parent"
-          app:layout_constraintRight_toLeftOf="@id/imagesChangeInterval"
-          android:layout_marginTop="@dimen/_27sdp"
-          android:text="@string/images_change_interval"
-          android:textSize="@dimen/_14ssp"
-          />
-        <NumberPicker android:theme="@style/NumberPickerText"
-          android:id="@+id/imagesChangeInterval"
-          android:layout_width="@dimen/_90sdp"
-          android:layout_height="@dimen/_90sdp"
-          app:layout_constraintTop_toBottomOf="@id/selectDir"
-          app:layout_constraintLeft_toRightOf="@id/imagesChangeIntervalText"
-          app:layout_constraintRight_toRightOf="parent"
-          app:minValue="@{1}"
-          app:maxValue="@{60}"
-          android:value="@={vm.imagesChangeIntervalVM}"
-          />
-      </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+      app:layout_constraintTop_toBottomOf="@id/tabs"
+      app:layout_constraintBottom_toTopOf="@id/start"
+      android:paddingTop="@dimen/padding"
+      android:paddingLeft="@dimen/padding"
+      android:paddingRight="@dimen/padding"
+      />
 
     <Button style="@style/MainButton"
       android:id="@+id/start"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       app:layout_constraintBottom_toBottomOf="parent"
+      android:layout_marginLeft="@dimen/padding"
+      android:layout_marginRight="@dimen/padding"
+      android:layout_marginBottom="@dimen/padding"
       android:text="@string/save"
       android:onClick="@{() -> vm.onStartClick()}"
       />

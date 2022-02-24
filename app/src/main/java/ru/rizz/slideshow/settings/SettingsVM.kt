@@ -21,6 +21,7 @@ class SettingsVM @Inject constructor(
 		object StartClick : Event()
 		data class PreconditionsViolated(val text: String) : Event()
 		data class ErrorOccured(val text: String) : Event()
+		object ImagesDirPathChanged : Event()
 	}
 
 	object ImagesDirPathInfo {
@@ -28,17 +29,31 @@ class SettingsVM @Inject constructor(
 		const val SET = "задан"
 	}
 
+	object DefaultSettings {
+		const val IMAGES_DIR_PATH = ""
+		const val IMAGES_CHANGE_INTERVAL = 3
+		const val SCHEDULE_SLIDE_SHOW_FLAGS = false
+		const val START_HOUR = 0
+		const val START_MINUTE = 0
+		const val STOP_HOUR = 0
+		const val STOP_MINUTE = 0
+	}
+
 	private val mImagesDirPathLive = MutableLiveData("")
 
-	val imagesDirPathInfoVM = mImagesDirPathLive.map { if (it.isEmpty()) ImagesDirPathInfo.NOT_SET else ImagesDirPathInfo.SET }
-	val isImagesDirPathSetVM = imagesDirPathInfoVM.map { it == ImagesDirPathInfo.SET }
+	val imagesDirPathInfoVM = MutableLiveData("")
+	val isImagesDirPathSetVM = MutableLiveData(false)
 	val imagesChangeIntervalVM = MutableLiveData(1)
+	val scheduleStartSlideShowFlagVM = MutableLiveData(false)
+	val scheduleStopSlideShowFlagVM = MutableLiveData(false)
+	val startHourVM = MutableLiveData(0)
+	val startMinuteVM = MutableLiveData(0)
+	val stopHourVM = MutableLiveData(0)
+	val stopMinuteVM = MutableLiveData(0)
 
 	fun onCreate() {
 		viewModelScope.launch {
-			val settings = getSettings()
-			mImagesDirPathLive.value = settings?.imagesDirPath ?: ""
-			imagesChangeIntervalVM.value = settings?.imagesChangeInterval?.seconds ?: 1
+			loadSettings()
 		}
 	}
 
@@ -46,9 +61,8 @@ class SettingsVM @Inject constructor(
 		sendEvent(Event.DirSelectionClick)
 	}
 
-	fun onDirSelected(path: Uri) {
-		mImagesDirPathLive.value = path.toString()
-	}
+	fun onDirSelected(path: Uri) =
+		bindImagesDirPath(path.toString())
 
 	fun onStartClick() {
 		if (mImagesDirPathLive.value.isNullOrEmpty()) {
@@ -61,15 +75,38 @@ class SettingsVM @Inject constructor(
 		}
 	}
 
-	private suspend fun getSettings() =
-		mSettingsRepository.getSettings()
+	private suspend fun loadSettings() {
+		val settings = mSettingsRepository.getSettings()
+		val dirPath = settings?.imagesDirPath ?: DefaultSettings.IMAGES_DIR_PATH
+		bindImagesDirPath(dirPath)
+		imagesChangeIntervalVM.value = settings?.imagesChangeInterval?.seconds ?: DefaultSettings.IMAGES_CHANGE_INTERVAL
+		scheduleStartSlideShowFlagVM.value = settings?.scheduleStartSlideShowFlag ?: DefaultSettings.SCHEDULE_SLIDE_SHOW_FLAGS
+		scheduleStopSlideShowFlagVM.value = settings?.scheduleStopSlideShowFlag ?: DefaultSettings.SCHEDULE_SLIDE_SHOW_FLAGS
+		startHourVM.value = settings?.startHour ?: DefaultSettings.START_HOUR
+		startMinuteVM.value = settings?.startMinute ?: DefaultSettings.START_MINUTE
+		stopHourVM.value = settings?.stopHour ?: DefaultSettings.STOP_HOUR
+		stopMinuteVM.value = settings?.stopMinute ?: DefaultSettings.STOP_MINUTE
+	}
+
+	private fun bindImagesDirPath(path: String) {
+		mImagesDirPathLive.value = path
+		imagesDirPathInfoVM.value = if (path.isEmpty()) ImagesDirPathInfo.NOT_SET else ImagesDirPathInfo.SET
+		isImagesDirPathSetVM.value = path.isNotEmpty()
+		sendEvent(Event.ImagesDirPathChanged)
+	}
 
 	private suspend fun saveSettings() =
 		try {
 			mSettingsRepository.setSettings(Settings(
-				mImagesDirPathLive.value!!,
-				imagesChangeIntervalVM.value!!.seconds)
-			)
+				mImagesDirPathLive.require,
+				imagesChangeIntervalVM.require.seconds,
+				scheduleStartSlideShowFlagVM.require,
+				scheduleStopSlideShowFlagVM.require,
+				startHourVM.require,
+				startMinuteVM.require,
+				stopHourVM.require,
+				stopMinuteVM.require,
+			))
 			true
 		} catch (e: Exception) {
 			Log.e(TAG, "Ошибка сохранения настроек", e)

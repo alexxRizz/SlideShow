@@ -14,7 +14,17 @@
     <item name="android:paddingBottom">@dimen/button_vertical_padding</item>
   </style>
 
-  <style name="NumberPickerText">
+  <style name="NumberPickerTheme">
     <item name="android:textSize">@dimen/_18ssp</item>
+  </style>
+
+  <style name="TimePickerTheme">
+    <item name="android:textSize">@dimen/_14ssp</item>
+  </style>
+
+  <style name="TimePicker">
+    <item name="android:timePickerMode">spinner</item>
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">@dimen/_110sdp</item>
   </style>
 </resources>
