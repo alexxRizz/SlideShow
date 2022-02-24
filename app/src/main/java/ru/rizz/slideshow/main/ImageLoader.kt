@@ -35,7 +35,7 @@ data class Image(
 	val uri: Uri,
 )
 
-private const val TAG = "ImageLoader"
+private val TAG = ImageLoader::class.simpleName
 
 class ImageLoader @Inject constructor(
 	@ApplicationContext private val mContext: Context,
@@ -50,13 +50,14 @@ class ImageLoader @Inject constructor(
 			val files = loadImageFiles(ss)
 			if (files.isNotEmpty())
 				iterate(files, ss)
+		} catch (e: NoImagesException) {
+			Log.w(TAG, "Файлы изображений не найдены")
+			emit(ImageLoadingResult.error(e.msg))
+		} catch (e: CancellationException) {
+			Log.d(TAG, "Загрузка изображений отменена")
 		} catch (e: Exception) {
-			if (e is NoImagesException) {
-				emit(ImageLoadingResult.error(e.msg))
-			} else {
-				Log.e(TAG, "Ошибка загрузки изображений", e)
-				emit(ImageLoadingResult.error("Ошибка загрузки изображений\n${e.message}"))
-			}
+			Log.e(TAG, "Ошибка загрузки изображений", e)
+			emit(ImageLoadingResult.error("Ошибка загрузки изображений\n${e.message}"))
 		}
 	}
 

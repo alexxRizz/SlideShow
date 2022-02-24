@@ -7,7 +7,7 @@ import ru.rizz.slideshow.common.*
 import ru.rizz.slideshow.settings.*
 import javax.inject.*
 
-private const val TAG = "MainVM"
+private val TAG = MainVM::class.simpleName
 
 @HiltViewModel
 class MainVM @Inject constructor(

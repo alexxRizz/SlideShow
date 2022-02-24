@@ -9,7 +9,7 @@ import ru.rizz.slideshow.common.*
 import javax.inject.*
 import kotlin.time.Duration.Companion.seconds
 
-private const val TAG = "SettingsVM"
+private val TAG = SettingsVM::class.simpleName
 
 @HiltViewModel
 class SettingsVM @Inject constructor(

@@ -4,7 +4,7 @@ import android.content.*
 import android.util.*
 import ru.rizz.slideshow.*
 
-private const val TAG = "BootReceiver"
+private val TAG = BootReceiver::class.simpleName
 
 class BootReceiver : BroadcastReceiver() {
 

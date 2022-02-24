@@ -11,7 +11,7 @@ import ru.rizz.slideshow.common.*
 import ru.rizz.slideshow.databinding.*
 import ru.rizz.slideshow.settings.SettingsVM.*
 
-private const val TAG = "SettingsFragment"
+private val TAG = SettingsFragment::class.simpleName
 
 @AndroidEntryPoint
 class SettingsFragment : FragmentBase<SettingsVM, Event, FragmentSettingsBinding>() {
