@@ -9,16 +9,25 @@
     android:layout_height="match_parent">
 
     <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:gravity="center"
       android:text="@string/settings_prompt"
       android:textSize="@dimen/_22ssp"
       android:textAlignment="center"
       android:visibility="@{!vm.hasSettingsVM}"
+      android:onClick="@{() -> vm.onSettingsPromptClick()}"
+      />
+
+    <TextView
+      android:id="@+id/progress"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginLeft="@dimen/padding"
+      android:layout_marginRight="@dimen/padding"
+      android:gravity="center"
+      android:textSize="@dimen/_20ssp"
+      android:textAlignment="center"
       android:onClick="@{() -> vm.onSettingsPromptClick()}"
       />
 

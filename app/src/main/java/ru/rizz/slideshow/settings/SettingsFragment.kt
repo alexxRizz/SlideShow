@@ -1,6 +1,7 @@
 package ru.rizz.slideshow.settings
 
 import android.content.*
+import android.util.*
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.fragment.app.*
@@ -10,6 +11,8 @@ import ru.rizz.slideshow.common.*
 import ru.rizz.slideshow.databinding.*
 import ru.rizz.slideshow.settings.SettingsVM.*
 
+private const val TAG = "SettingsFragment"
+
 @AndroidEntryPoint
 class SettingsFragment : FragmentBase<SettingsVM, Event, FragmentSettingsBinding>() {
 
@@ -17,11 +20,16 @@ class SettingsFragment : FragmentBase<SettingsVM, Event, FragmentSettingsBinding
 	override val vm by viewModels<SettingsVM>()
 
 	private val mDirSelection = registerForActivityResult(OpenDocumentTree()) {
-		if (it != null) {
-			requireContext().contentResolver.releasePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-			requireContext().contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-			vm.onDirSelected(it)
+		if (it == null) {
+			Log.w(TAG, "registerForActivityResult(): null uri received")
+			return@registerForActivityResult
 		}
+		try {
+			requireContext().contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+		} catch (e: Exception) {
+			Log.e(TAG, "Ошибка takePersistableUriPermission()", e)
+		}
+		vm.onDirSelected(it)
 	}
 
 	override fun onViewCreated() {

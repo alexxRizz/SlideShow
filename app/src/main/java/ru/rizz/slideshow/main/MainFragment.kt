@@ -1,5 +1,6 @@
 package ru.rizz.slideshow.main
 
+import android.view.*
 import androidx.fragment.app.*
 import androidx.lifecycle.*
 import androidx.navigation.fragment.*
@@ -22,10 +23,19 @@ class MainFragment : FragmentBase<MainVM, Event, FragmentMainBinding>() {
 			vm.onCreate()
 			viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 				vm.imageVM.flowOn(Dispatchers.IO).collect {
-					binding.title.text = it.title
-					binding.image.setImageURI(it.uri)
+					bindImageResult(it)
 				}
 			}
+		}
+	}
+
+	private fun bindImageResult(it: ImageLoadingResult) {
+		binding.progress.visibility = if (it.image != null) View.GONE else View.VISIBLE
+		if (it.image != null) {
+			binding.title.text = it.image.title
+			binding.image.setImageURI(it.image.uri)
+		} else {
+			binding.progress.text = it.progress.ifEmpty { it.error }
 		}
 	}
 
