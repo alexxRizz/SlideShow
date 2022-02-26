@@ -1,6 +1,10 @@
 package ru.rizz.slideshow
 
+import android.content.*
+import android.net.*
 import android.os.*
+import android.provider.Settings.*
+import androidx.activity.result.contract.*
 import androidx.appcompat.app.*
 import androidx.core.view.*
 import androidx.drawerlayout.widget.*
@@ -9,9 +13,14 @@ import androidx.navigation.fragment.*
 import androidx.navigation.ui.*
 import dagger.hilt.android.*
 import ru.rizz.slideshow.databinding.*
+import ru.rizz.slideshow.schedule.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+	companion object {
+		var instance: MainActivity? = null; private set
+	}
 
 	private lateinit var mBinding: ActivityMainBinding
 	private lateinit var mNavController: NavController
@@ -19,8 +28,16 @@ class MainActivity : AppCompatActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+		instance = this
 		inflate()
 		setupNavigation()
+		notifyActivityIsStarted()
+		permitStartingActivityFromBackground()
+	}
+
+	override fun onDestroy() {
+		super.onDestroy()
+		instance = null
 	}
 
 	private fun inflate() {
@@ -37,6 +54,21 @@ class MainActivity : AppCompatActivity() {
 		)
 		setupActionBarWithNavController(mNavController, mAppBarConfiguration)
 		mBinding.navView.setupWithNavController(mNavController)
+	}
+
+	private fun notifyActivityIsStarted() =
+		sendBroadcast(
+			Intent(this, ScheduleBroadcastReceiver::class.java)
+				.setAction(BroadcastActions.MAIN_ACTIVITY_IS_STARTED)
+		)
+
+	// https://stackoverflow.com/questions/59419653/cannot-start-activity-background-in-android-10-android-q
+	// https://stackoverflow.com/questions/65137688/how-to-open-activity-from-background-services-full-screen-intent-notification-a
+	private fun permitStartingActivityFromBackground() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !canDrawOverlays(this)) {
+			registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+				.launch(Intent(ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
+		}
 	}
 
 	override fun onSupportNavigateUp() =

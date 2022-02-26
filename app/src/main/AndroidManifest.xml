@@ -3,6 +3,8 @@
   package="ru.rizz.slideshow">
 
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+  <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
   <application
     android:allowBackup="true"
@@ -23,13 +25,18 @@
     </activity>
 
     <receiver
-      android:name=".autoload.BootReceiver"
+      android:name=".schedule.ScheduleBroadcastReceiver"
       android:enabled="true"
       android:exported="true"
       android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
       <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED"/>
         <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+        <action android:name="ru.rizz.slideshow.SCHEDULE_START_MAIN_ACTIVITY"/>
+        <action android:name="ru.rizz.slideshow.SCHEDULE_STOP_MAIN_ACTIVITY"/>
+        <action android:name="ru.rizz.slideshow.START_MAIN_ACTIVITY"/>
+        <action android:name="ru.rizz.slideshow.STOP_MAIN_ACTIVITY"/>
+        <action android:name="ru.rizz.slideshow.MAIN_ACTIVITY_IS_STARTED"/>
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>
     </receiver>

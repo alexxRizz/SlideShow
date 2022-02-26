@@ -10,6 +10,7 @@ import dagger.hilt.android.*
 import ru.rizz.slideshow.R
 import ru.rizz.slideshow.common.*
 import ru.rizz.slideshow.databinding.*
+import ru.rizz.slideshow.schedule.*
 import ru.rizz.slideshow.settings.SettingsVM.*
 
 private val TAG = SettingsFragment::class.simpleName
@@ -44,12 +45,28 @@ class SettingsFragment : FragmentBase<SettingsVM, Event, FragmentSettingsBinding
 	override fun onEvent(ev: Event) = when (ev) {
 		Event.DirSelectionClick -> mDirSelection.launch(null)
 		Event.StartClick -> popBackStack()
-		is Event.PreconditionsViolated -> Toast.makeText(context, ev.text, Toast.LENGTH_SHORT).show()
-		is Event.ErrorOccured -> Toast.makeText(context, ev.text, Toast.LENGTH_LONG).show()
+		is Event.PreconditionsViolated -> showToast(ev.text, isLong = false)
+		is Event.ErrorOccured -> showToast(ev.text, isLong = true)
 		Event.ImagesDirPathChanged -> onImagesDirPathChanged()
+		is Event.SettingsSavedWithSchedule -> schedule(ev)
 	}
+
+	private fun showToast(text: String, isLong: Boolean) =
+		Toast.makeText(requireContext(), text, if (isLong) Toast.LENGTH_LONG else Toast.LENGTH_SHORT).show()
 
 	private fun onImagesDirPathChanged() {
 		binding.viewPager.adapter?.notifyItemChanged(0)
 	}
+
+	private fun schedule(ev: Event.SettingsSavedWithSchedule) {
+		if (ev.scheduleStartSlideShowFlag)
+			sendScheduleBroadcast(BroadcastActions.SCHEDULE_START_MAIN_ACTIVITY)
+		else if (ev.scheduleStopSlideShowFlag)
+			sendScheduleBroadcast(BroadcastActions.SCHEDULE_STOP_MAIN_ACTIVITY)
+	}
+
+	private fun sendScheduleBroadcast(action: String) =
+		requireContext().sendBroadcast(
+			Intent(context, ScheduleBroadcastReceiver::class.java).setAction(action)
+		)
 }

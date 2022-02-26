@@ -22,6 +22,7 @@ class SettingsVM @Inject constructor(
 		data class PreconditionsViolated(val text: String) : Event()
 		data class ErrorOccured(val text: String) : Event()
 		object ImagesDirPathChanged : Event()
+		data class SettingsSavedWithSchedule(val scheduleStartSlideShowFlag: Boolean, val scheduleStopSlideShowFlag: Boolean) : Event()
 	}
 
 	object ImagesDirPathInfo {
@@ -31,7 +32,7 @@ class SettingsVM @Inject constructor(
 
 	object DefaultSettings {
 		const val IMAGES_DIR_PATH = ""
-		const val IMAGES_CHANGE_INTERVAL = 3
+		const val IMAGES_CHANGE_INTERVAL = 1
 		const val SCHEDULE_SLIDE_SHOW_FLAGS = false
 		const val START_HOUR = 0
 		const val START_MINUTE = 0
@@ -97,20 +98,25 @@ class SettingsVM @Inject constructor(
 
 	private suspend fun saveSettings() =
 		try {
-			mSettingsRepository.setSettings(Settings(
-				mImagesDirPathLive.require,
-				imagesChangeIntervalVM.require.seconds,
-				scheduleStartSlideShowFlagVM.require,
-				scheduleStopSlideShowFlagVM.require,
-				startHourVM.require,
-				startMinuteVM.require,
-				stopHourVM.require,
-				stopMinuteVM.require,
-			))
+			val ss = newSettings()
+			mSettingsRepository.setSettings(ss)
+			if (ss.scheduleStartSlideShowFlag || ss.scheduleStopSlideShowFlag)
+				sendEvent(Event.SettingsSavedWithSchedule(ss.scheduleStartSlideShowFlag, ss.scheduleStopSlideShowFlag))
 			true
 		} catch (e: Exception) {
 			Log.e(TAG, "Ошибка сохранения настроек", e)
 			sendEvent(Event.ErrorOccured("Ошибка сохранения настроек\n${e.msg}"))
 			false
 		}
+
+	private fun newSettings() = Settings(
+		mImagesDirPathLive.require,
+		imagesChangeIntervalVM.require.seconds,
+		scheduleStartSlideShowFlagVM.require,
+		scheduleStopSlideShowFlagVM.require,
+		startHourVM.require,
+		startMinuteVM.require,
+		stopHourVM.require,
+		stopMinuteVM.require,
+	)
 }
