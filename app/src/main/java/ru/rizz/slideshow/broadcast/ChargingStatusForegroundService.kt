@@ -18,10 +18,6 @@ class ChargingStatusForegroundService : Service() {
 
 		fun startService(context: Context) =
 			ContextCompat.startForegroundService(context, Intent(context, ChargingStatusForegroundService::class.java))
-
-		//		fun stopService(context: Context) {
-		//			context.stopService(Intent(context, ChargingBroadcastForegroundService::class.java))
-		//		}
 	}
 
 	private var myBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -40,6 +36,8 @@ class ChargingStatusForegroundService : Service() {
 			.setContentTitle("Слайд-шоу")
 			.setContentText("Слайд-шоу")
 			.setSmallIcon(R.drawable.ic_foreground_service)
+			.setPriority(NotificationCompat.PRIORITY_MIN)
+			.setSound(null)
 			.build()
 		startForeground(1, notification)
 
@@ -65,7 +63,7 @@ class ChargingStatusForegroundService : Service() {
 	private fun createNotificationChannel() {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
 			return
-		val channel = NotificationChannel(CHANNEL_ID, "Слайд-шоу", NotificationManager.IMPORTANCE_DEFAULT)
+		val channel = NotificationChannel(CHANNEL_ID, "Слайд-шоу", NotificationManager.IMPORTANCE_MIN)
 		val manager = getSystemService(NotificationManager::class.java)
 		manager.createNotificationChannel(channel)
 	}

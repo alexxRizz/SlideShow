@@ -37,6 +37,20 @@ android {
     dataBinding true
     viewBinding true
   }
+
+  flavorDimensions "imageSorting"
+
+  productFlavors {
+    noSorting {
+      dimension "imageSorting"
+    }
+    byFileName {
+      dimension "imageSorting"
+    }
+    byDateModified {
+      dimension "imageSorting"
+    }
+  }
 }
 
 dependencies {
