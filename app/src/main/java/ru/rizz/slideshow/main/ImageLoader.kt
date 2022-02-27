@@ -1,14 +1,17 @@
 package ru.rizz.slideshow.main
 
 import android.content.*
+import android.database.*
 import android.net.*
+import android.provider.*
+import android.provider.DocumentsContract.Document.*
 import android.util.*
-import androidx.documentfile.provider.*
 import dagger.hilt.android.qualifiers.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.rizz.slideshow.common.*
 import ru.rizz.slideshow.settings.*
+import ru.rizz.slideshow.settings.Settings
 import javax.inject.*
 
 interface IImageLoader {
@@ -47,9 +50,7 @@ class ImageLoader @Inject constructor(
 			?: return@flow
 		try {
 			emit(ImageLoadingResult.progress("Загрузка изображений,\nждите..."))
-			val files = loadImageFiles(ss)
-			if (files.isNotEmpty())
-				iterate(files, ss)
+			loadImageFiles(ss)
 		} catch (e: NoImagesException) {
 			Log.w(TAG, "Файлы изображений не найдены")
 			emit(ImageLoadingResult.error(e.msg))
@@ -61,23 +62,30 @@ class ImageLoader @Inject constructor(
 		}
 	}
 
-	private fun loadImageFiles(ss: Settings): List<DocumentFile> {
-		val dir = DocumentFile.fromTreeUri(mContext, Uri.parse(ss.imagesDirPath))
-			?: throw NoImagesException("В указанной папке нет файлов изображений")
-		val files = dir.listFiles()
-			.asSequence()
-			.filter { it.isFile && it.canRead() && (it.type == "image/jpeg" || it.type == "image/png") }
-			.sortedBy { it.name }
-			.toList()
-		if (files.isEmpty())
-			throw NoImagesException("В указанной папке не найдено ни одного изображения")
-		return files
+	private suspend fun FlowCollector<ImageLoadingResult>.loadImageFiles(ss: Settings) {
+		val treeUri = Uri.parse(ss.imagesDirPath)
+		val uri = DocumentsContract.buildChildDocumentsUriUsingTree(treeUri, DocumentsContract.getTreeDocumentId(treeUri))
+		val cursor = mContext.contentResolver.query(
+			uri,
+			arrayOf(COLUMN_DOCUMENT_ID, COLUMN_DISPLAY_NAME, COLUMN_MIME_TYPE),
+			"$COLUMN_MIME_TYPE = ? OR $COLUMN_MIME_TYPE = ?",
+			arrayOf("image/jpeg", "image/png"),
+			 "date_modified DESC"
+		) ?: throw NoImagesException("В указанной папке нет файлов изображений")
+		cursor.use {
+			if (cursor.count == 0)
+				throw NoImagesException("В указанной папке нет файлов изображений")
+			iterateOverImageFiles(cursor, ss, treeUri)
+		}
 	}
 
-	private suspend fun FlowCollector<ImageLoadingResult>.iterate(files: List<DocumentFile>, ss: Settings) {
+	private suspend fun FlowCollector<ImageLoadingResult>.iterateOverImageFiles(cursor: Cursor, ss: Settings, treeUri: Uri) {
 		while (true) {
-			files.forEach {
-				emit(ImageLoadingResult(Image(it.name ?: "", it.uri)))
+			cursor.moveToPosition(-1)
+			while (cursor.moveToNext()) {
+				val docId = cursor.getString(0)
+				val name = cursor.getString(1)
+				emit(ImageLoadingResult(Image(name, DocumentsContract.buildDocumentUriUsingTree(treeUri, docId))))
 				delay(ss.imagesChangeInterval)
 			}
 		}

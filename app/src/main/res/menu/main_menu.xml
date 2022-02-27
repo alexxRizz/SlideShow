@@ -2,11 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item
     android:id="@+id/mainFragment"
-    android:title="Слайд-шоу"/>
+    android:title="@string/slideShow"/>
   <item
     android:id="@+id/settingsFragment"
-    android:title="Настройки"/>
-  <item
-    android:id="@+id/aboutFragment"
-    android:title="О программе"/>
+    android:title="@string/settings"/>
 </menu>
