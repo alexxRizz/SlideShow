@@ -45,6 +45,11 @@ class ImageLoader @Inject constructor(
 	private val mSettingsRepository: ISettingsReadonlyRepository
 ) : IImageLoader {
 
+	private object MimeType {
+		const val JPEG = "image/jpeg"
+		const val PNG = "image/png"
+	}
+
 	override val images: Flow<ImageLoadingResult> = flow {
 		val ss = mSettingsRepository.getSettings()
 			?: return@flow
@@ -65,12 +70,14 @@ class ImageLoader @Inject constructor(
 	private suspend fun FlowCollector<ImageLoadingResult>.loadImageFiles(ss: Settings) {
 		val treeUri = Uri.parse(ss.imagesDirPath)
 		val uri = DocumentsContract.buildChildDocumentsUriUsingTree(treeUri, DocumentsContract.getTreeDocumentId(treeUri))
+		// Выяснилось, что FileProvider игнорирует selectionArgs и selectionOrder.
+		// https://androidx.tech/artifacts/core/core/1.1.0-source/androidx/core/content/FileProvider.java.html
 		val cursor = mContext.contentResolver.query(
 			uri,
-			arrayOf(COLUMN_DOCUMENT_ID, COLUMN_DISPLAY_NAME, COLUMN_MIME_TYPE),
-			"$COLUMN_MIME_TYPE = ? OR $COLUMN_MIME_TYPE = ?",
-			arrayOf("image/jpeg", "image/png"),
-			 "date_modified DESC"
+			arrayOf(COLUMN_DOCUMENT_ID, COLUMN_DISPLAY_NAME, COLUMN_MIME_TYPE, COLUMN_LAST_MODIFIED),
+			"$COLUMN_MIME_TYPE=? OR $COLUMN_MIME_TYPE=?",
+			arrayOf(MimeType.JPEG, MimeType.PNG),
+			"$COLUMN_LAST_MODIFIED DESC"
 		) ?: throw NoImagesException("В указанной папке нет файлов изображений")
 		cursor.use {
 			if (cursor.count == 0)
@@ -85,8 +92,11 @@ class ImageLoader @Inject constructor(
 			while (cursor.moveToNext()) {
 				val docId = cursor.getString(0)
 				val name = cursor.getString(1)
-				emit(ImageLoadingResult(Image(name, DocumentsContract.buildDocumentUriUsingTree(treeUri, docId))))
-				delay(ss.imagesChangeInterval)
+				val mimeType = cursor.getString(2)
+				if (mimeType == MimeType.JPEG || mimeType == MimeType.PNG) {
+					emit(ImageLoadingResult(Image(name, DocumentsContract.buildDocumentUriUsingTree(treeUri, docId))))
+					delay(ss.imagesChangeInterval)
+				}
 			}
 		}
 	}
