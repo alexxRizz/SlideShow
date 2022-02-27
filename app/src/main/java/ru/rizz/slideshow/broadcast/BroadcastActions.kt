@@ -1,4 +1,4 @@
-package ru.rizz.slideshow.schedule
+package ru.rizz.slideshow.broadcast
 
 object BroadcastActions {
 	const val QUICKBOOT_POWERON = "android.intent.action.QUICKBOOT_POWERON"

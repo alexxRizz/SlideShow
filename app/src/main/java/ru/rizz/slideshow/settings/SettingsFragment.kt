@@ -10,7 +10,7 @@ import dagger.hilt.android.*
 import ru.rizz.slideshow.R
 import ru.rizz.slideshow.common.*
 import ru.rizz.slideshow.databinding.*
-import ru.rizz.slideshow.schedule.*
+import ru.rizz.slideshow.broadcast.*
 import ru.rizz.slideshow.settings.SettingsVM.*
 
 private val TAG = SettingsFragment::class.simpleName
@@ -67,6 +67,6 @@ class SettingsFragment : FragmentBase<SettingsVM, Event, FragmentSettingsBinding
 
 	private fun sendScheduleBroadcast(action: String) =
 		requireContext().sendBroadcast(
-			Intent(context, ScheduleBroadcastReceiver::class.java).setAction(action)
+			Intent(context, MyBroadcastReceiver::class.java).setAction(action)
 		)
 }

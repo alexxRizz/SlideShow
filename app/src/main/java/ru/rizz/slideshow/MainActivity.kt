@@ -12,8 +12,8 @@ import androidx.navigation.*
 import androidx.navigation.fragment.*
 import androidx.navigation.ui.*
 import dagger.hilt.android.*
+import ru.rizz.slideshow.broadcast.*
 import ru.rizz.slideshow.databinding.*
-import ru.rizz.slideshow.schedule.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 		setupNavigation()
 		notifyActivityIsStarted()
 		permitStartingActivityFromBackground()
+		startChargeForegroundService()
 	}
 
 	override fun onDestroy() {
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
 	private fun notifyActivityIsStarted() =
 		sendBroadcast(
-			Intent(this, ScheduleBroadcastReceiver::class.java)
+			Intent(this, MyBroadcastReceiver::class.java)
 				.setAction(BroadcastActions.MAIN_ACTIVITY_IS_STARTED)
 		)
 
@@ -69,6 +70,10 @@ class MainActivity : AppCompatActivity() {
 			registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 				.launch(Intent(ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
 		}
+	}
+
+	private fun startChargeForegroundService() {
+		ChargingStatusForegroundService.startService(this)
 	}
 
 	override fun onSupportNavigateUp() =

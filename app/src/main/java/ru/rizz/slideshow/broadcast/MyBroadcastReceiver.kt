@@ -1,4 +1,4 @@
-package ru.rizz.slideshow.schedule
+package ru.rizz.slideshow.broadcast
 
 import android.app.*
 import android.content.*
@@ -11,13 +11,13 @@ import ru.rizz.slideshow.settings.*
 import java.util.*
 import javax.inject.*
 
-private val TAG = ScheduleBroadcastReceiver::class.simpleName
+private val TAG = MyBroadcastReceiver::class.simpleName
 
 @AndroidEntryPoint
-class ScheduleBroadcastReceiver : BroadcastReceiver() {
+class MyBroadcastReceiver : BroadcastReceiver() {
 
 	companion object {
-		const val ONE_DAY_IN_MILLIS = 86_400_000
+		const val ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000 // 24h * 60m * 60s * 1000ms
 	}
 
 	private lateinit var mSettingsRepository: ISettingsReadonlyRepository
@@ -88,7 +88,7 @@ class ScheduleBroadcastReceiver : BroadcastReceiver() {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
 				PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE else
 				PendingIntent.FLAG_UPDATE_CURRENT
-		val intent = Intent(context, ScheduleBroadcastReceiver::class.java).apply { this.action = action }
+		val intent = Intent(context, MyBroadcastReceiver::class.java).apply { this.action = action }
 		val triggerIntent = PendingIntent.getBroadcast(context, requestCode, intent, flags)
 		alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(triggerTime, null), triggerIntent)
 		Log.d(TAG, "Alarm is set to ${hour}:${minute} | $action")

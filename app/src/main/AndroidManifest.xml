@@ -3,8 +3,12 @@
   package="ru.rizz.slideshow">
 
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+  <!-- Чтобы использовать AlarmManager.setAlarmClock() на android api >= 31 -->
   <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+  <!-- Чтобы была возможность запускать активность из BackgroundReceiver на android api >= 29 (также см. ACTION_MANAGE_OVERLAY_PERMISSION) -->
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+  <!-- Чтобы была возможность получить уведомление о зарядке на android api >= 26 (https://stackoverflow.com/questions/56539550/how-to-listen-for-power-connected-android-8) -->
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
   <application
     android:allowBackup="true"
@@ -25,10 +29,8 @@
     </activity>
 
     <receiver
-      android:name=".schedule.ScheduleBroadcastReceiver"
-      android:enabled="true"
-      android:exported="true"
-      android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+      android:name=".broadcast.MyBroadcastReceiver"
+      android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED"/>
         <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
@@ -40,6 +42,8 @@
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>
     </receiver>
+
+    <service android:name=".broadcast.ChargingStatusForegroundService"/>
 
   </application>
 </manifest>
