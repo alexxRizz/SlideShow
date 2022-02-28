@@ -8,9 +8,9 @@ import androidx.fragment.app.*
 import com.google.android.material.tabs.*
 import dagger.hilt.android.*
 import ru.rizz.slideshow.R
+import ru.rizz.slideshow.broadcast.*
 import ru.rizz.slideshow.common.*
 import ru.rizz.slideshow.databinding.*
-import ru.rizz.slideshow.broadcast.*
 import ru.rizz.slideshow.settings.SettingsVM.*
 
 private val TAG = SettingsFragment::class.simpleName
@@ -48,7 +48,7 @@ class SettingsFragment : FragmentBase<SettingsVM, Event, FragmentSettingsBinding
 		is Event.PreconditionsViolated -> showToast(ev.text, isLong = false)
 		is Event.ErrorOccured -> showToast(ev.text, isLong = true)
 		Event.ImagesDirPathChanged -> onImagesDirPathChanged()
-		is Event.SettingsSavedWithSchedule -> schedule(ev)
+		is Event.SettingsSaved -> sendScheduleBroadcast(BroadcastActions.UPDATE_SCHEDULE)
 	}
 
 	private fun showToast(text: String, isLong: Boolean) =
@@ -56,13 +56,6 @@ class SettingsFragment : FragmentBase<SettingsVM, Event, FragmentSettingsBinding
 
 	private fun onImagesDirPathChanged() {
 		binding.viewPager.adapter?.notifyItemChanged(0)
-	}
-
-	private fun schedule(ev: Event.SettingsSavedWithSchedule) {
-		if (ev.scheduleStartSlideShowFlag)
-			sendScheduleBroadcast(BroadcastActions.SCHEDULE_START_MAIN_ACTIVITY)
-		else if (ev.scheduleStopSlideShowFlag)
-			sendScheduleBroadcast(BroadcastActions.SCHEDULE_STOP_MAIN_ACTIVITY)
 	}
 
 	private fun sendScheduleBroadcast(action: String) =

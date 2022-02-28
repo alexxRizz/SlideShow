@@ -22,7 +22,7 @@ class SettingsVM @Inject constructor(
 		data class PreconditionsViolated(val text: String) : Event()
 		data class ErrorOccured(val text: String) : Event()
 		object ImagesDirPathChanged : Event()
-		data class SettingsSavedWithSchedule(val scheduleStartSlideShowFlag: Boolean, val scheduleStopSlideShowFlag: Boolean) : Event()
+		object SettingsSaved : Event()
 	}
 
 	object ImagesDirPathInfo {
@@ -106,8 +106,7 @@ class SettingsVM @Inject constructor(
 		try {
 			val ss = newSettings()
 			mSettingsRepository.setSettings(ss)
-			if (ss.scheduleStartSlideShowFlag || ss.scheduleStopSlideShowFlag)
-				sendEvent(Event.SettingsSavedWithSchedule(ss.scheduleStartSlideShowFlag, ss.scheduleStopSlideShowFlag))
+			sendEvent(Event.SettingsSaved)
 			true
 		} catch (e: Exception) {
 			Log.e(TAG, "Ошибка сохранения настроек", e)

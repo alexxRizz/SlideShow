@@ -34,8 +34,7 @@
       <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED"/>
         <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
-        <action android:name="ru.rizz.slideshow.SCHEDULE_START_MAIN_ACTIVITY"/>
-        <action android:name="ru.rizz.slideshow.SCHEDULE_STOP_MAIN_ACTIVITY"/>
+        <action android:name="ru.rizz.slideshow.UPDATE_SCHEDULE"/>
         <action android:name="ru.rizz.slideshow.START_MAIN_ACTIVITY"/>
         <action android:name="ru.rizz.slideshow.STOP_MAIN_ACTIVITY"/>
         <action android:name="ru.rizz.slideshow.MAIN_ACTIVITY_IS_STARTED"/>

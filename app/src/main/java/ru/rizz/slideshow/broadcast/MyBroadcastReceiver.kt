@@ -42,21 +42,20 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 			BroadcastActions.START_MAIN_ACTIVITY -> startActivityIfNeeded(context)
 			BroadcastActions.STOP_MAIN_ACTIVITY -> stopActivity()
 
-			BroadcastActions.SCHEDULE_START_MAIN_ACTIVITY,
-			BroadcastActions.SCHEDULE_STOP_MAIN_ACTIVITY -> launchSchedule(context)
+			BroadcastActions.UPDATE_SCHEDULE -> launchScheduleUpdate(context)
 
 			BroadcastActions.MAIN_ACTIVITY_IS_STARTED -> onMainActivityStarted(context)
 		}
 	}
 
 	private fun onBootCompleted(context: Context) {
-		launchSchedule(context)
+		launchScheduleUpdate(context)
 		launchMainActivityIfNeeded(context)
 	}
 
-	private fun launchSchedule(context: Context) {
+	private fun launchScheduleUpdate(context: Context) {
 		GlobalScope.launch {
-			scheduleStartMainActivityImpl(context)
+			updateSchedule(context)
 		}
 	}
 
@@ -71,7 +70,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
 	private fun onMainActivityStarted(context: Context) {
 		mWasMainActivityStarted = true
-		launchSchedule(context)
+		launchScheduleUpdate(context)
 	}
 
 	private fun startActivityIfNeeded(context: Context) {
@@ -86,16 +85,14 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 		context.startActivity(intent)
 	}
 
-	private suspend fun scheduleStartMainActivityImpl(context: Context) {
+	private suspend fun updateSchedule(context: Context) {
 		val ss = mSettingsRepository.getSettings()
 			?: return
-		if (ss.scheduleStartSlideShowFlag)
-			setAlarm(context, ss.startHour, ss.startMinute, 1, BroadcastActions.START_MAIN_ACTIVITY)
-		if (ss.scheduleStopSlideShowFlag)
-			setAlarm(context, ss.stopHour, ss.stopMinute, 2, BroadcastActions.STOP_MAIN_ACTIVITY)
+		setAlarm(context, ss.startHour, ss.startMinute, ss.scheduleStartSlideShowFlag, 1, BroadcastActions.START_MAIN_ACTIVITY)
+		setAlarm(context, ss.stopHour, ss.stopMinute, ss.scheduleStopSlideShowFlag, 2, BroadcastActions.STOP_MAIN_ACTIVITY)
 	}
 
-	private fun setAlarm(context: Context, hour: Int, minute: Int, requestCode: Int, action: String) {
+	private fun setAlarm(context: Context, hour: Int, minute: Int, shouldSchedule: Boolean, requestCode: Int, action: String) {
 		val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 		val triggerTime = getTriggerTime(hour, minute)
 		val flags =
@@ -104,8 +101,13 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 				PendingIntent.FLAG_UPDATE_CURRENT
 		val intent = Intent(context, MyBroadcastReceiver::class.java).apply { this.action = action }
 		val triggerIntent = PendingIntent.getBroadcast(context, requestCode, intent, flags)
-		alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(triggerTime, null), triggerIntent)
-		Log.d(TAG, "Alarm is set to ${hour}:${minute} | $action")
+		if (shouldSchedule) {
+			alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(triggerTime, null), triggerIntent)
+			Log.d(TAG, "Alarm is set to ${hour}:${minute} | $action")
+		} else {
+			alarmManager.cancel(triggerIntent)
+			Log.d(TAG, "Alarm canceled ${hour}:${minute} | $action")
+		}
 	}
 
 	private fun getTriggerTime(hour: Int, minute: Int): Long {
