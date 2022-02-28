@@ -1,6 +1,7 @@
 package ru.rizz.slideshow.main
 
 import android.view.*
+import android.view.animation.*
 import androidx.fragment.app.*
 import androidx.lifecycle.*
 import androidx.navigation.fragment.*
@@ -15,15 +16,19 @@ import ru.rizz.slideshow.main.MainVM.*
 @AndroidEntryPoint
 class MainFragment : FragmentBase<MainVM, Event, FragmentMainBinding>() {
 
+	private lateinit var mFadeIn: Animation
+
 	override val layoutId = R.layout.fragment_main
 	override val vm by viewModels<MainVM>()
 
 	override fun onViewCreated() {
 		viewLifecycleOwner.lifecycleScope.launch {
+			mFadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in)
 			vm.onCreate()
 			viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 				vm.imageVM.flowOn(Dispatchers.IO).collect {
 					bindImageResult(it)
+					startAnimation()
 				}
 			}
 		}
@@ -37,6 +42,10 @@ class MainFragment : FragmentBase<MainVM, Event, FragmentMainBinding>() {
 		} else {
 			binding.progress.text = it.progress.ifEmpty { it.error }
 		}
+	}
+
+	private fun startAnimation() {
+		binding.image.startAnimation(mFadeIn)
 	}
 
 	override fun onEvent(ev: Event) = when (ev) {
