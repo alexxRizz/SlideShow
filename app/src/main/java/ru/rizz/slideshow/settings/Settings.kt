@@ -11,4 +11,6 @@ data class Settings(
 	val startMinute: Int,
 	val stopHour: Int,
 	val stopMinute: Int,
+	val startAppOnCharging: Boolean,
+	val startAppAfterReboot: Boolean,
 )

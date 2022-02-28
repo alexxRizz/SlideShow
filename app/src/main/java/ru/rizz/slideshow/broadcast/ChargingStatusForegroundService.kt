@@ -6,11 +6,16 @@ import android.os.*
 import android.util.*
 import androidx.core.app.*
 import androidx.core.content.*
-import ru.rizz.slideshow.*
+import dagger.hilt.android.*
+import kotlinx.coroutines.*
+import ru.rizz.slideshow.R
+import ru.rizz.slideshow.settings.*
+import javax.inject.*
 
 private val TAG = ChargingStatusForegroundService::class.simpleName
 
 /** Для получения уведомления о том, что началась зарядка. */
+@AndroidEntryPoint
 class ChargingStatusForegroundService : Service() {
 
 	companion object {
@@ -20,17 +25,36 @@ class ChargingStatusForegroundService : Service() {
 			ContextCompat.startForegroundService(context, Intent(context, ChargingStatusForegroundService::class.java))
 	}
 
-	private var myBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-		override fun onReceive(context: Context, intent: Intent?) =
-			sendBroadcast(
-				Intent(context, MyBroadcastReceiver::class.java)
-					.setAction(BroadcastActions.START_MAIN_ACTIVITY)
-			)
+	private lateinit var mSettingsRepository: ISettingsReadonlyRepository
+
+	@Inject
+	fun init(settingsRepository: ISettingsReadonlyRepository) {
+		mSettingsRepository = settingsRepository
 	}
 
+	private var myBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+		override fun onReceive(context: Context, intent: Intent?) {
+			GlobalScope.launch {
+				val ss = mSettingsRepository.getSettings()
+					?: return@launch
+				if (ss.startAppOnCharging)
+					sendBroadcast(
+						Intent(context, MyBroadcastReceiver::class.java)
+							.setAction(BroadcastActions.START_MAIN_ACTIVITY)
+					)
+			}
+		}
+
+	}
 
 	override fun onCreate() {
+		super.onCreate()
 		Log.d(TAG, "onCreate()")
+		startService()
+		registerReceiver(myBroadcastReceiver, IntentFilter(Intent.ACTION_POWER_CONNECTED))
+	}
+
+	private fun startService() {
 		createNotificationChannel()
 		val notification = NotificationCompat.Builder(this, CHANNEL_ID)
 			.setContentTitle("Слайд-шоу")
@@ -40,20 +64,6 @@ class ChargingStatusForegroundService : Service() {
 			.setSound(null)
 			.build()
 		startForeground(1, notification)
-
-		registerReceiver(myBroadcastReceiver, IntentFilter(Intent.ACTION_POWER_CONNECTED))
-	}
-
-
-	override fun onStartCommand(resultIntent: Intent?, resultCode: Int, startId: Int): Int {
-		Log.d(TAG, "inside onStartCommand() API")
-		return startId
-	}
-
-
-	override fun onDestroy() {
-		super.onDestroy()
-		Log.d(TAG, "inside onDestroy() API")
 	}
 
 	override fun onBind(intent: Intent?): IBinder? {

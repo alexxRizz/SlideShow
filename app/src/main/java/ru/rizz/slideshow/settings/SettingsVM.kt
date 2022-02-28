@@ -38,6 +38,8 @@ class SettingsVM @Inject constructor(
 		const val START_MINUTE = 0
 		const val STOP_HOUR = 0
 		const val STOP_MINUTE = 0
+		const val START_APP_ON_CHARGING = false
+		const val START_APP_AFTER_REBOOT = false
 	}
 
 	private val mImagesDirPathLive = MutableLiveData("")
@@ -51,6 +53,8 @@ class SettingsVM @Inject constructor(
 	val startMinuteVM = MutableLiveData(0)
 	val stopHourVM = MutableLiveData(0)
 	val stopMinuteVM = MutableLiveData(0)
+	val startAppOnCharging = MutableLiveData(false)
+	val startAppAfterReboot = MutableLiveData(false)
 
 	fun onCreate() {
 		viewModelScope.launch {
@@ -87,6 +91,8 @@ class SettingsVM @Inject constructor(
 		startMinuteVM.value = settings?.startMinute ?: DefaultSettings.START_MINUTE
 		stopHourVM.value = settings?.stopHour ?: DefaultSettings.STOP_HOUR
 		stopMinuteVM.value = settings?.stopMinute ?: DefaultSettings.STOP_MINUTE
+		startAppOnCharging.value = settings?.startAppOnCharging ?: DefaultSettings.START_APP_ON_CHARGING
+		startAppAfterReboot.value = settings?.startAppAfterReboot ?: DefaultSettings.START_APP_AFTER_REBOOT
 	}
 
 	private fun bindImagesDirPath(path: String) {
@@ -118,5 +124,7 @@ class SettingsVM @Inject constructor(
 		startMinuteVM.require,
 		stopHourVM.require,
 		stopMinuteVM.require,
+		startAppOnCharging.require,
+		startAppAfterReboot.require,
 	)
 }

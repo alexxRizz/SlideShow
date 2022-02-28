@@ -37,27 +37,41 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 		Log.d(TAG, "onReceive(${intent.action})")
 		when (intent.action) {
 			Intent.ACTION_BOOT_COMPLETED,
-			BroadcastActions.QUICKBOOT_POWERON,
-			BroadcastActions.START_MAIN_ACTIVITY -> startActivityIfNeeded(context)
+			BroadcastActions.QUICKBOOT_POWERON -> onBootCompleted(context)
 
+			BroadcastActions.START_MAIN_ACTIVITY -> startActivityIfNeeded(context)
 			BroadcastActions.STOP_MAIN_ACTIVITY -> stopActivity()
 
 			BroadcastActions.SCHEDULE_START_MAIN_ACTIVITY,
-			BroadcastActions.SCHEDULE_STOP_MAIN_ACTIVITY -> schedule(context)
+			BroadcastActions.SCHEDULE_STOP_MAIN_ACTIVITY -> launchSchedule(context)
 
 			BroadcastActions.MAIN_ACTIVITY_IS_STARTED -> onMainActivityStarted(context)
 		}
 	}
 
-	private fun onMainActivityStarted(context: Context) {
-		mWasMainActivityStarted = true
-		schedule(context)
+	private fun onBootCompleted(context: Context) {
+		launchSchedule(context)
+		launchMainActivityIfNeeded(context)
 	}
 
-	private fun schedule(context: Context) {
+	private fun launchSchedule(context: Context) {
 		GlobalScope.launch {
 			scheduleStartMainActivityImpl(context)
 		}
+	}
+
+	private fun launchMainActivityIfNeeded(context: Context) {
+		GlobalScope.launch {
+			mSettingsRepository.getSettings()?.let {
+				if (it.startAppAfterReboot)
+					startActivityIfNeeded(context)
+			}
+		}
+	}
+
+	private fun onMainActivityStarted(context: Context) {
+		mWasMainActivityStarted = true
+		launchSchedule(context)
 	}
 
 	private fun startActivityIfNeeded(context: Context) {
@@ -73,7 +87,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 	}
 
 	private suspend fun scheduleStartMainActivityImpl(context: Context) {
-		val ss = withContext(Dispatchers.IO) { mSettingsRepository.getSettings() }
+		val ss = mSettingsRepository.getSettings()
 			?: return
 		if (ss.scheduleStartSlideShowFlag)
 			setAlarm(context, ss.startHour, ss.startMinute, 1, BroadcastActions.START_MAIN_ACTIVITY)

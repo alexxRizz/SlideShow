@@ -68,6 +68,45 @@
           app:maxValue="@{60}"
           android:value="@={vm.imagesChangeIntervalVM}"
           />
+
+        <TextView
+          android:id="@+id/startAppOnChargingText"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          app:layout_constraintTop_toBottomOf="@id/imagesChangeInterval"
+          app:layout_constraintLeft_toLeftOf="parent"
+          app:layout_constraintRight_toLeftOf="@id/startAppOnCharging"
+          android:text="@string/start_app_on_charging"
+          android:textSize="@dimen/_14ssp"
+          />
+        <androidx.appcompat.widget.SwitchCompat
+          android:id="@+id/startAppOnCharging"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          app:layout_constraintBaseline_toBaselineOf="@id/startAppOnChargingText"
+          app:layout_constraintRight_toRightOf="parent"
+          android:checked="@={vm.startAppOnCharging}"
+          />
+
+        <TextView
+          android:id="@+id/startAppAfterRebootText"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          app:layout_constraintTop_toBottomOf="@id/startAppOnChargingText"
+          app:layout_constraintLeft_toLeftOf="parent"
+          app:layout_constraintRight_toLeftOf="@id/startAppOnCharging"
+          android:layout_marginTop="@dimen/_15sdp"
+          android:text="@string/start_app_after_reboot"
+          android:textSize="@dimen/_14ssp"
+          />
+        <androidx.appcompat.widget.SwitchCompat
+          android:id="@+id/startAfterReboot"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          app:layout_constraintBaseline_toBaselineOf="@id/startAppAfterRebootText"
+          app:layout_constraintRight_toRightOf="parent"
+          android:checked="@={vm.startAppAfterReboot}"
+          />
       </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
   </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,7 @@ import androidx.datastore.core.*
 import androidx.datastore.preferences.*
 import androidx.datastore.preferences.core.*
 import dagger.hilt.android.qualifiers.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.rizz.slideshow.common.*
 import javax.inject.*
@@ -32,14 +33,16 @@ class SettingsRepository @Inject constructor(
 		private val START_MINUTE = intPreferencesKey("startMinute")
 		private val STOP_HOUR = intPreferencesKey("stopHour")
 		private val STOP_MINUTE = intPreferencesKey("stopMinute")
+		private val START_APP_ON_CHARGING = booleanPreferencesKey("startAppOnCharging")
+		private val START_APP_AFTER_REBOOT = booleanPreferencesKey("startAppAfterReboot")
 	}
 
 	private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
-	override suspend fun getSettings() =
+	override suspend fun getSettings() = withContext(Dispatchers.IO) {
 		mContext.dataStore.data.firstOrNull()?.let {
 			if (!it.contains(IMAGES_DIR_PATH))
-				return null
+				return@withContext null
 			Settings(
 				it.require(IMAGES_DIR_PATH),
 				it.require(IMAGES_CHANGE_INTERVAL).seconds,
@@ -49,8 +52,11 @@ class SettingsRepository @Inject constructor(
 				it.require(START_MINUTE),
 				it.require(STOP_HOUR),
 				it.require(STOP_MINUTE),
+				it.require(START_APP_ON_CHARGING),
+				it.require(START_APP_AFTER_REBOOT),
 			)
 		}
+	}
 
 	override suspend fun setSettings(settings: Settings) {
 		mContext.dataStore.edit {
@@ -62,6 +68,8 @@ class SettingsRepository @Inject constructor(
 			it[START_MINUTE] = settings.startMinute
 			it[STOP_HOUR] = settings.stopHour
 			it[STOP_MINUTE] = settings.stopMinute
+			it[START_APP_ON_CHARGING] = settings.startAppOnCharging
+			it[START_APP_AFTER_REBOOT] = settings.startAppAfterReboot
 		}
 	}
 
