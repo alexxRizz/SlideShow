@@ -66,7 +66,7 @@ class ImageLoader @Inject constructor(
 			Log.w(TAG, "Файлы изображений не найдены")
 			emit(ImageLoadingResult.error(e.msg))
 		} catch (e: CancellationException) {
-			Log.d(TAG, "Загрузка изображений отменена")
+			Log.d(TAG, "Слайд-шоу отменено")
 		} catch (e: Exception) {
 			Log.e(TAG, "Ошибка загрузки изображений", e)
 			emit(ImageLoadingResult.error("Ошибка загрузки изображений\n${e.message}"))

@@ -13,7 +13,7 @@
     android:name="androidx.navigation.fragment.NavHostFragment"
     app:defaultNavHost="true"
     app:navGraph="@navigation/nav_graph"
-  />
+    />
 
   <com.google.android.material.navigation.NavigationView
     android:id="@+id/navView"
@@ -22,5 +22,5 @@
     android:layout_gravity="start"
     android:fitsSystemWindows="true"
     app:menu="@menu/main_menu"
-  />
+    />
 </androidx.drawerlayout.widget.DrawerLayout>
