@@ -1,8 +1,9 @@
 package ru.rizz.slideshow.main.image.iterator
 
 import android.database.*
+import java.io.*
 
-interface IImageCursor {
+interface IImageCursor : Closeable {
 	val count: Int
 
 	fun moveToPosition(pos: Int)
@@ -28,4 +29,7 @@ class ImageCursor(private val mCursor: Cursor) : IImageCursor {
 
 	override fun getLong(pos: Int) =
 		mCursor.getLong(pos)
+
+	override fun close() =
+		mCursor.close()
 }

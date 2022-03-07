@@ -8,6 +8,14 @@ import ru.rizz.slideshow.main.image.iterator.*
 
 @Module
 @InstallIn(ViewModelComponent::class)
+interface ImageModule {
+
+	@Binds
+	fun imageCursorFactory(value: ImageCursorFactory): IImageCursorFactory
+}
+
+@Module
+@InstallIn(ViewModelComponent::class)
 class ImageModuleProvider {
 
 	@Provides
