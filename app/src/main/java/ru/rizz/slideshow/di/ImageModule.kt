@@ -12,6 +12,9 @@ interface ImageModule {
 
 	@Binds
 	fun imageCursorFactory(value: ImageCursorFactory): IImageCursorFactory
+
+	@Binds
+	fun imageUriFactory(value: ImageUriFactory): IImageUriFactory
 }
 
 @Module

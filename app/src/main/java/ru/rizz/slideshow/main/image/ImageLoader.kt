@@ -31,7 +31,7 @@ class ImageLoader @Inject constructor(
 			?: return@flow
 		try {
 			emit(ImageLoadingResult.progress("Загрузка изображений,\nждите..."))
-			loadImageFiles(ss, ImageLoadingResultEmiter(this))
+			loadImages(ss, ImageLoadingResultEmiter(this))
 		} catch (e: NoImagesException) {
 			Log.w(TAG, "Файлы изображений не найдены")
 			emit(ImageLoadingResult.error(e.msg))
@@ -43,7 +43,7 @@ class ImageLoader @Inject constructor(
 		}
 	}
 
-	private suspend fun loadImageFiles(ss: Settings, emiter: IImageLoadingResultEmiter) {
+	private suspend fun loadImages(ss: Settings, emiter: IImageLoadingResultEmiter) {
 		val treeUri = Uri.parse(ss.imagesDirPath)
 		val cursor = mImageCursorFactory.new(treeUri)
 			?: throw NoImagesException("В указанной папке нет файлов изображений")
