@@ -4,6 +4,7 @@ import android.util.*
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.*
 import ru.rizz.slideshow.common.*
+import ru.rizz.slideshow.main.image.*
 import ru.rizz.slideshow.settings.*
 import javax.inject.*
 

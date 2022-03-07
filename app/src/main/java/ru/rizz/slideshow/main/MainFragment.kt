@@ -12,6 +12,7 @@ import ru.rizz.slideshow.R
 import ru.rizz.slideshow.common.*
 import ru.rizz.slideshow.databinding.*
 import ru.rizz.slideshow.main.MainVM.*
+import ru.rizz.slideshow.main.image.*
 
 @AndroidEntryPoint
 class MainFragment : FragmentBase<MainVM, Event, FragmentMainBinding>() {
