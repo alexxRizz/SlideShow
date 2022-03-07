@@ -1,11 +1,11 @@
-package ru.rizz.slideshow.main.image
+package ru.rizz.slideshow.main.image.iterator
 
-import android.database.*
 import android.net.*
 import android.provider.*
 import android.util.*
 import kotlinx.coroutines.*
 import ru.rizz.slideshow.*
+import ru.rizz.slideshow.main.image.*
 import javax.inject.*
 import kotlin.time.*
 
@@ -16,12 +16,12 @@ class ImageIteratorWithSorting @Inject constructor() : IImageIterator {
 	private var mCurrentPos = 0
 	private val mSortedImages = arrayListOf<ImageLoadingResult>()
 
-	override suspend fun iterate(emiter: IImageLoadingResultEmiter, cursor: Cursor, treeUri: Uri, imagesChangeInterval: Duration) {
+	override suspend fun iterate(emiter: IImageLoadingResultEmiter, cursor: IImageCursor, treeUri: Uri, imagesChangeInterval: Duration) {
 		cacheSortedImages(cursor, treeUri)
-		iterateOverImageFilesWithSortingLoop(emiter, imagesChangeInterval)
+		iterate(emiter, imagesChangeInterval)
 	}
 
-	private fun cacheSortedImages(cursor: Cursor, treeUri: Uri) {
+	private fun cacheSortedImages(cursor: IImageCursor, treeUri: Uri) {
 		mSortedImages.clear()
 		mSortedImages.ensureCapacity(cursor.count)
 		while (cursor.moveToNext()) {
@@ -41,7 +41,7 @@ class ImageIteratorWithSorting @Inject constructor() : IImageIterator {
 			mSortedImages.sortByDescending { it.dateModifiedMillis }
 	}
 
-	private suspend fun iterateOverImageFilesWithSortingLoop(emiter: IImageLoadingResultEmiter, imagesChangeInterval: Duration) {
+	private suspend fun iterate(emiter: IImageLoadingResultEmiter, imagesChangeInterval: Duration) {
 		while (true) {
 			if (mCurrentPos >= mSortedImages.size)
 				mCurrentPos = 0
@@ -53,5 +53,4 @@ class ImageIteratorWithSorting @Inject constructor() : IImageIterator {
 			}
 		}
 	}
-
 }

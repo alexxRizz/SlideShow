@@ -1,10 +1,10 @@
-package ru.rizz.slideshow.main.image
+package ru.rizz.slideshow.main.image.iterator
 
-import android.database.*
 import android.net.*
 import android.provider.*
 import android.util.*
 import kotlinx.coroutines.*
+import ru.rizz.slideshow.main.image.*
 import javax.inject.*
 import kotlin.time.*
 
@@ -14,7 +14,7 @@ class ImageIteratorNoSorting @Inject constructor() : IImageIterator {
 
 	private var mCurrentPos = 0
 
-	override suspend fun iterate(emiter: IImageLoadingResultEmiter, cursor: Cursor, treeUri: Uri, imagesChangeInterval: Duration) {
+	override suspend fun iterate(emiter: IImageLoadingResultEmiter, cursor: IImageCursor, treeUri: Uri, imagesChangeInterval: Duration) {
 		while (true) {
 			if (mCurrentPos >= cursor.count)
 				mCurrentPos = 0

@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.rizz.slideshow.common.*
+import ru.rizz.slideshow.main.image.iterator.*
 import ru.rizz.slideshow.settings.*
 import ru.rizz.slideshow.settings.Settings
 import javax.inject.*
@@ -62,7 +63,7 @@ class ImageLoader @Inject constructor(
 		cursor.use {
 			if (cursor.count == 0)
 				throw NoImagesException("В указанной папке нет файлов изображений")
-			mImageIterator.iterate(emiter, cursor, treeUri, ss.imagesChangeInterval)
+			mImageIterator.iterate(emiter, ImageCursor(cursor), treeUri, ss.imagesChangeInterval)
 		}
 	}
 

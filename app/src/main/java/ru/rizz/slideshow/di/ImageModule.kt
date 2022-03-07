@@ -4,7 +4,7 @@ import dagger.*
 import dagger.hilt.*
 import dagger.hilt.android.components.*
 import ru.rizz.slideshow.*
-import ru.rizz.slideshow.main.image.*
+import ru.rizz.slideshow.main.image.iterator.*
 
 @Module
 @InstallIn(ViewModelComponent::class)
