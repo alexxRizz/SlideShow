@@ -32,11 +32,11 @@ class ImageLoader @Inject constructor(
 		try {
 			emit(ImageLoadingResult.progress("Загрузка изображений,\nждите..."))
 			loadImages(ss, ImageLoadingResultEmiter(this))
-		} catch (e: NoImagesException) {
-			Log.w(TAG, "Файлы изображений не найдены")
-			emit(ImageLoadingResult.error(e.msg))
 		} catch (e: CancellationException) {
 			Log.d(TAG, "Слайд-шоу отменено")
+		} catch (e: NoImagesException) {
+			Log.w(TAG, "Файлы изображений не найдены", e)
+			emit(ImageLoadingResult.error(e.msg))
 		} catch (e: Exception) {
 			Log.e(TAG, "Ошибка загрузки изображений", e)
 			emit(ImageLoadingResult.error("Ошибка загрузки изображений\n${e.message}"))
@@ -45,10 +45,10 @@ class ImageLoader @Inject constructor(
 
 	private suspend fun loadImages(ss: Settings, emiter: IImageLoadingResultEmiter) {
 		val treeUri = Uri.parse(ss.imagesDirPath)
-		val cursor = mImageCursorFactory.new(treeUri)
+		val imageCursor = mImageCursorFactory.new(treeUri)
 			?: throw NoImagesException("В указанной папке нет файлов изображений")
-		cursor.use {
-			if (cursor.count == 0)
+		imageCursor.use {
+			if (imageCursor.count == 0)
 				throw NoImagesException("В указанной папке нет файлов изображений")
 			mImageIterator.iterate(emiter, it, treeUri, ss.imagesChangeInterval)
 		}
