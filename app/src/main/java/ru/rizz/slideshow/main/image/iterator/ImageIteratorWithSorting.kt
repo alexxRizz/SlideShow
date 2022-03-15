@@ -3,7 +3,6 @@ package ru.rizz.slideshow.main.image.iterator
 import android.net.*
 import android.util.*
 import kotlinx.coroutines.*
-import ru.rizz.slideshow.*
 import ru.rizz.slideshow.main.image.*
 import javax.inject.*
 import kotlin.time.*
@@ -12,6 +11,7 @@ private val TAG = ImageIteratorWithSorting::class.simpleName
 
 class ImageIteratorWithSorting @Inject constructor(
 	private val mImageUriFactory: IImageUriFactory,
+	private val mImageSortingTypeProvider: IImageSortingTypeProvider,
 ) : IImageIterator {
 
 	private var mCurrentPos = 0
@@ -36,10 +36,10 @@ class ImageIteratorWithSorting @Inject constructor(
 					dateModifiedMillis = dateModified
 				))
 		}
-		if (BuildConfigExt.byFileNameSorting)
-			mSortedImages.sortBy { it.image!!.title }
-		else if (BuildConfigExt.byDateModifiedSorting)
-			mSortedImages.sortByDescending { it.dateModifiedMillis }
+		when (mImageSortingTypeProvider.type) {
+			ImageSortingType.BY_FILE_NAME -> mSortedImages.sortBy { it.image!!.title }
+			ImageSortingType.BY_DATE_MODIFIED -> mSortedImages.sortByDescending { it.dateModifiedMillis }
+		}
 	}
 
 	private suspend fun iterate(emiter: IImageLoadingResultEmiter, imagesChangeInterval: Duration) {

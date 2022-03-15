@@ -15,6 +15,9 @@ interface ImageModule {
 
 	@Binds
 	fun imageUriFactory(value: ImageUriFactory): IImageUriFactory
+
+	@Binds
+	fun imageSortingTypeProvider(value: ImageSortingTypeProvider): IImageSortingTypeProvider
 }
 
 @Module

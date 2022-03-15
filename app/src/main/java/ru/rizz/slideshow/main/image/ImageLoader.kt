@@ -48,7 +48,7 @@ class ImageLoader @Inject constructor(
 		val imageCursor = mImageCursorFactory.new(treeUri)
 			?: throw NoImagesException("В указанной папке нет файлов изображений")
 		imageCursor.use {
-			if (imageCursor.count == 0)
+			if (it.count == 0)
 				throw NoImagesException("В указанной папке нет файлов изображений")
 			mImageIterator.iterate(emiter, it, treeUri, ss.imagesChangeInterval)
 		}
