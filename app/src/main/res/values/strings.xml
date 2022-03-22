@@ -13,4 +13,5 @@
   <string name="slideShow">Слайд-шоу</string>
   <string name="start_app_after_reboot">Запуск слайд-шоу после перезагрузки</string>
   <string name="start_app_on_charging">Запуск слайд-шоу при зарядке</string>
+  <string name="use_dark_theme">Использовать темную тему</string>
 </resources>

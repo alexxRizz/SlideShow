@@ -3,6 +3,7 @@ package ru.rizz.slideshow.main
 import android.util.*
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.*
+import kotlinx.coroutines.*
 import ru.rizz.slideshow.common.*
 import ru.rizz.slideshow.main.image.*
 import ru.rizz.slideshow.settings.*
@@ -25,12 +26,14 @@ class MainVM @Inject constructor(
 	val hasSettingsVM = MutableLiveData(true)
 	val imageVM = imageLoader.images
 
-	suspend fun onCreate() {
-		try {
-			mSettings = mSettingsRepository.getSettings()
-			hasSettingsVM.value = mSettings != null
-		} catch (e: Exception) {
-			Log.e(TAG, "Ошибка запуска слайд-шоу", e)
+	fun onCreate() {
+		viewModelScope.launch {
+			try {
+				mSettings = mSettingsRepository.getSettings()
+				hasSettingsVM.value = mSettings != null
+			} catch (e: Exception) {
+				Log.e(TAG, "Ошибка запуска слайд-шоу", e)
+			}
 		}
 	}
 

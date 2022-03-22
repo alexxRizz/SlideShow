@@ -5,6 +5,7 @@ import android.util.*
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.*
 import kotlinx.coroutines.*
+import ru.rizz.slideshow.*
 import ru.rizz.slideshow.common.*
 import javax.inject.*
 import kotlin.time.Duration.Companion.seconds
@@ -13,7 +14,8 @@ private val TAG = SettingsVM::class.simpleName
 
 @HiltViewModel
 class SettingsVM @Inject constructor(
-	private val mSettingsRepository: ISettingsRepository
+	private val mSettingsRepository: ISettingsRepository,
+	private val mAppThemeUpdater: IAppThemeUpdater,
 ) : ViewModelBase() {
 
 	sealed class Event : IVmEvent {
@@ -40,6 +42,7 @@ class SettingsVM @Inject constructor(
 		const val STOP_MINUTE = 0
 		const val START_APP_ON_CHARGING = false
 		const val START_APP_AFTER_REBOOT = false
+		const val USE_DARK_THEME = false
 	}
 
 	private val mImagesDirPathLive = MutableLiveData("")
@@ -53,8 +56,9 @@ class SettingsVM @Inject constructor(
 	val startMinuteVM = MutableLiveData(0)
 	val stopHourVM = MutableLiveData(0)
 	val stopMinuteVM = MutableLiveData(0)
-	val startAppOnCharging = MutableLiveData(false)
-	val startAppAfterReboot = MutableLiveData(false)
+	val startAppOnChargingVM = MutableLiveData(false)
+	val startAppAfterRebootVM = MutableLiveData(false)
+	val useDarkThemeVM = MutableLiveData(false)
 
 	fun onCreate() {
 		viewModelScope.launch {
@@ -91,8 +95,9 @@ class SettingsVM @Inject constructor(
 		startMinuteVM.value = settings?.startMinute ?: DefaultSettings.START_MINUTE
 		stopHourVM.value = settings?.stopHour ?: DefaultSettings.STOP_HOUR
 		stopMinuteVM.value = settings?.stopMinute ?: DefaultSettings.STOP_MINUTE
-		startAppOnCharging.value = settings?.startAppOnCharging ?: DefaultSettings.START_APP_ON_CHARGING
-		startAppAfterReboot.value = settings?.startAppAfterReboot ?: DefaultSettings.START_APP_AFTER_REBOOT
+		startAppOnChargingVM.value = settings?.startAppOnCharging ?: DefaultSettings.START_APP_ON_CHARGING
+		startAppAfterRebootVM.value = settings?.startAppAfterReboot ?: DefaultSettings.START_APP_AFTER_REBOOT
+		useDarkThemeVM.value = settings?.useDarkTheme ?: DefaultSettings.USE_DARK_THEME
 	}
 
 	private fun bindImagesDirPath(path: String) {
@@ -107,6 +112,7 @@ class SettingsVM @Inject constructor(
 			val ss = newSettings()
 			mSettingsRepository.setSettings(ss)
 			sendEvent(Event.SettingsSaved)
+			mAppThemeUpdater.run()
 			true
 		} catch (e: Exception) {
 			Log.e(TAG, "Ошибка сохранения настроек", e)
@@ -123,7 +129,8 @@ class SettingsVM @Inject constructor(
 		startMinuteVM.require,
 		stopHourVM.require,
 		stopMinuteVM.require,
-		startAppOnCharging.require,
-		startAppAfterReboot.require,
+		startAppOnChargingVM.require,
+		startAppAfterRebootVM.require,
+		useDarkThemeVM.require,
 	)
 }

@@ -13,4 +13,5 @@ data class Settings(
 	val stopMinute: Int,
 	val startAppOnCharging: Boolean,
 	val startAppAfterReboot: Boolean,
+	val useDarkTheme: Boolean,
 )

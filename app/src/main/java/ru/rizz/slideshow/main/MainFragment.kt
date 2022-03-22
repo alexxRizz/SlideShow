@@ -23,9 +23,9 @@ class MainFragment : FragmentBase<MainVM, Event, FragmentMainBinding>() {
 	override val vm by viewModels<MainVM>()
 
 	override fun onViewCreated() {
+		mFadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in)
+		vm.onCreate()
 		viewLifecycleOwner.lifecycleScope.launch {
-			mFadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in)
-			vm.onCreate()
 			viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 				vm.imageVM.flowOn(Dispatchers.IO).collect {
 					bindImageResult(it)

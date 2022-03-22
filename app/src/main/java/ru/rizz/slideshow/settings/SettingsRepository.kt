@@ -35,6 +35,7 @@ class SettingsRepository @Inject constructor(
 		private val STOP_MINUTE = intPreferencesKey("stopMinute")
 		private val START_APP_ON_CHARGING = booleanPreferencesKey("startAppOnCharging")
 		private val START_APP_AFTER_REBOOT = booleanPreferencesKey("startAppAfterReboot")
+		private val USE_DARK_THEME = booleanPreferencesKey("useDarkTheme")
 	}
 
 	private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -54,6 +55,7 @@ class SettingsRepository @Inject constructor(
 				it.require(STOP_MINUTE),
 				it.require(START_APP_ON_CHARGING),
 				it.require(START_APP_AFTER_REBOOT),
+				it.option(USE_DARK_THEME, false),
 			)
 		}
 	}
@@ -70,9 +72,13 @@ class SettingsRepository @Inject constructor(
 			it[STOP_MINUTE] = settings.stopMinute
 			it[START_APP_ON_CHARGING] = settings.startAppOnCharging
 			it[START_APP_AFTER_REBOOT] = settings.startAppAfterReboot
+			it[USE_DARK_THEME] = settings.useDarkTheme
 		}
 	}
 
 	private fun <T> Preferences.require(key: Preferences.Key<T>) =
 		this[key]!!
+
+	private fun <T> Preferences.option(key: Preferences.Key<T>, defValue: T) =
+		this[key] ?: defValue
 }

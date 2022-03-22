@@ -3,6 +3,7 @@ package ru.rizz.slideshow.di
 import dagger.*
 import dagger.hilt.*
 import dagger.hilt.components.*
+import ru.rizz.slideshow.*
 import ru.rizz.slideshow.settings.*
 
 @Module
@@ -14,4 +15,7 @@ interface AppModule {
 
 	@Binds
 	fun settingsRepository(value: SettingsRepository): ISettingsRepository
+
+	@Binds
+	fun appThemeUpdater(value: AppThemeUpdater): IAppThemeUpdater
 }
